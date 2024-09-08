@@ -2,7 +2,10 @@ package orm
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -34,12 +37,25 @@ func (r *ShopRow) TableName() string {
 
 func mapShopToShopRow(shop *domain.Shop) *ShopRow {
 	return &ShopRow{
-		ID:          shop.ID,
-		Name:        shop.Name,
-		Description: shop.Description,
-		Latitude:    fmt.Sprintf("%v", shop.Location.Latitude),
-		Longitude:   fmt.Sprintf("%v", shop.Location.Longitude),
+		ID:          shop.ID(),
+		Name:        shop.Name(),
+		Description: shop.Description(),
+		Latitude:    fmt.Sprintf("%v", shop.Latitude()),
+		Longitude:   fmt.Sprintf("%v", shop.Longitude()),
 	}
+}
+
+func mapShopRowsToShop(row *ShopRow) *domain.Shop {
+	latitude, _ := strconv.ParseFloat(row.Latitude, 64)
+	longitude, _ := strconv.ParseFloat(row.Longitude, 64)
+
+	return domain.HydrateShop(
+		row.ID,
+		row.Name,
+		row.Description,
+		latitude,
+		longitude,
+	)
 }
 
 func (r *ShopRepo) NextID() string {
@@ -53,4 +69,23 @@ func (r *ShopRepo) Save(ctx context.Context, shop *domain.Shop) error {
 	}
 
 	return nil
+}
+
+func (r *ShopRepo) Get(ctx context.Context) ([]*domain.Shop, error) {
+	var rows []*ShopRow
+	res := r.db.WithContext(ctx).Find(&rows)
+	if res.Error != nil {
+		if errors.Is(res.Error, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, fmt.Errorf("%w: %v", domain.ErrShopRepoCanNotGet, res.Error)
+	}
+
+	shops := make([]*domain.Shop, len(rows))
+	for i, row := range rows {
+		shops[i] = mapShopRowsToShop(row)
+	}
+
+	return shops, nil
 }

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapa con Tiendas</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100vh;
+        width: 70%;
+        float: left;
+        position: relative;
+      }
+      #info {
+        width: 30%;
+        float: right;
+        padding: 20px;
+        box-sizing: border-box;
+        background-color: #f4f4f4;
+        height: 100vh;
+        overflow-y: auto;
+      }
+      h2 {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="info">
+      <h2>Store Information</h2>
+      <p>Select a store on the map to see details.</p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      // Datos de las tiendas con latitud y longitud
+      const stores = [
+        {
+          name: "MARKET SUAREZ",
+          description: "The best store for electronics.",
+          products: [
+            {
+              name: "Laptop",
+              description: "High performance laptop",
+              price: { amount: 1200, currency: "USD" },
+            },
+            {
+              name: "Smartphone",
+              description: "Latest model smartphone",
+              price: { amount: 800, currency: "USD" },
+            },
+          ],
+          location: {
+            lat: -12.364677205782971,
+            lng: -76.79435699524791,
+          },
+        },
+        {
+          name: "TINCO",
+          description: "A great place for home appliances.",
+          products: [
+            {
+              name: "Refrigerator",
+              description: "Energy-efficient fridge",
+              price: { amount: 600, currency: "USD" },
+            },
+            {
+              name: "Washing Machine",
+              description: "Top load washing machine",
+              price: { amount: 400, currency: "USD" },
+            },
+          ],
+          location: { lat: -12.363820759238386, lng: -76.79510090705814 },
+        },
+      ];
+
+      // Inicializar el mapa
+      const map = L.map("map").setView(
+        [-12.364942218722108, -76.79550234934086],
+        15.5
+      ); // Centra el mapa en una ubicación inicial
+
+      // Cargar el mapa de OpenStreetMap
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution:
+          'Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      // Añadir markers al mapa
+      stores.forEach((store) => {
+        const marker = L.marker([store.location.lat, store.location.lng]).addTo(
+          map
+        );
+        marker
+          .bindPopup(
+            `<strong>${store.name.toUpperCase()}</strong><br>
+        ${store.description}<br>`
+          )
+          .on("click", () => {
+            displayStoreInfo(store);
+          });
+      });
+
+      // Mostrar información de la tienda en la barra lateral
+      function displayStoreInfo(store) {
+        const infoDiv = document.getElementById("info");
+        infoDiv.innerHTML = `
+        <h2>${store.name.toUpperCase()}</h2>
+        <p>${store.description}</p>
+        <h3>Products:</h3>
+        ${store.products
+          .map(
+            (product) => `
+          <div class="product">
+            <strong>${product.name}</strong><br>
+            ${product.description}<br>
+            Price: ${product.price.amount} ${product.price.currency}
+          </div>
+        `
+          )
+          .join("")}
+      `;
+      }
+    </script>
+  </body>
+</html>

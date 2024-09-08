@@ -18,10 +18,7 @@ type createServ struct {
 }
 
 type CreateRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Latitude    int    `json:"latitude"`
-	Longitude   int    `json:"longitude"`
+	ShopFieldsDTO
 }
 
 type CreateResponse struct {
@@ -59,6 +56,6 @@ func (s *createServ) Execute(ctx context.Context, req CreateRequest) (*CreateRes
 	slog.InfoContext(ctx, "shop created", "shop", shop)
 
 	return &CreateResponse{
-		ID: shop.ID,
+		ID: shop.ID(),
 	}, nil
 }

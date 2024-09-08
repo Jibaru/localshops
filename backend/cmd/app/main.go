@@ -60,7 +60,9 @@ func main() {
 
 	shopRepo := orm.NewShopRepo(db)
 	createShopServ := application.NewCreateServ(shopRepo)
+	getAllShopsServ := application.NewGetAllServ(shopRepo)
 	createShopHandler := handlers.NewCreateHandler(createShopServ)
+	getAllShopsHandler := handlers.NewGetAllHandler(*getAllShopsServ)
 
 	// Gin configuration
 	gin.SetMode(gin.ReleaseMode)
@@ -71,6 +73,7 @@ func main() {
 	r.Use(gin.Recovery())
 
 	r.POST("/shops", createShopHandler.Handle)
+	r.GET("/shops", getAllShopsHandler.Handle)
 
 	address := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
 

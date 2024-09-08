@@ -12,18 +12,18 @@ var (
 )
 
 type Shop struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Location    LatLong `json:"location"`
+	id          string
+	name        string
+	description string
+	location    *LatLong
 }
 
 func NewShop(
 	id string,
 	name string,
 	description string,
-	latitude int,
-	longitude int,
+	latitude float64,
+	longitude float64,
 ) (*Shop, error) {
 	if strings.TrimSpace(id) == "" {
 		return nil, ErrEmptyID
@@ -37,13 +37,51 @@ func NewShop(
 		return nil, ErrEmptyDescription
 	}
 
+	location, err := NewLatLong(latitude, longitude)
+	if err != nil {
+		return nil, err
+	}
+
+	return HydrateShop(
+		id,
+		name,
+		description,
+		location.Latitude(),
+		location.Longitude(),
+	), nil
+}
+
+func HydrateShop(
+	id string,
+	name string,
+	description string,
+	latitude float64,
+	longitude float64,
+) *Shop {
 	return &Shop{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Location: LatLong{
-			Latitude:  latitude,
-			Longitude: longitude,
-		},
-	}, nil
+		id:          id,
+		name:        name,
+		description: description,
+		location:    HydrateLatLong(latitude, longitude),
+	}
+}
+
+func (s *Shop) ID() string {
+	return s.id
+}
+
+func (s *Shop) Name() string {
+	return s.name
+}
+
+func (s *Shop) Description() string {
+	return s.description
+}
+
+func (s *Shop) Latitude() float64 {
+	return s.location.Latitude()
+}
+
+func (s *Shop) Longitude() float64 {
+	return s.location.Longitude()
 }

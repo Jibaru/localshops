@@ -11,7 +11,7 @@ do {
     body = `{
         "name": "example",
         "description": "test",
-        "latitude": 123,
-        "longitude": 123
+        "latitude": -12.358355657471748,
+        "longitude": -76.79657241488
     }`;
 }
