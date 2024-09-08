@@ -72,7 +72,7 @@ func main() {
 
 	r.POST("/shops", createShopHandler.Handle)
 
-	address := "0.0.0.0:8080"
+	address := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
 
 	slog.Info("running app", "address", address)
 
