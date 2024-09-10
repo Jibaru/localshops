@@ -13,7 +13,7 @@ var (
 	ErrCanNotGetAllShops = errors.New("can not get all shops")
 )
 
-type GetAllServ struct {
+type getAllServ struct {
 	repo domain.ShopRepo
 }
 
@@ -23,13 +23,13 @@ type GetAllResponse struct {
 
 func NewGetAllServ(
 	repo domain.ShopRepo,
-) *GetAllServ {
-	return &GetAllServ{
+) *getAllServ {
+	return &getAllServ{
 		repo: repo,
 	}
 }
 
-func (s *GetAllServ) Execute(ctx context.Context) (*GetAllResponse, error) {
+func (s *getAllServ) Execute(ctx context.Context) (*GetAllResponse, error) {
 	slog.InfoContext(ctx, "exec get all shops")
 	shops, err := s.repo.Get(ctx)
 	if err != nil {

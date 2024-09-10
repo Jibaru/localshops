@@ -10,10 +10,9 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
+	product_routes "github.com/jibaru/localshops/internal/products/infrastructure/routes"
 	"github.com/jibaru/localshops/internal/shared/infrastructure/logger"
-	"github.com/jibaru/localshops/internal/shops/application"
-	"github.com/jibaru/localshops/internal/shops/infrastructure/handlers"
-	"github.com/jibaru/localshops/internal/shops/infrastructure/repositories/orm"
+	shop_routes "github.com/jibaru/localshops/internal/shops/infrastructure/routes"
 )
 
 type DatabaseConfig struct {
@@ -58,12 +57,6 @@ func main() {
 		return
 	}
 
-	shopRepo := orm.NewShopRepo(db)
-	createShopServ := application.NewCreateServ(shopRepo)
-	getAllShopsServ := application.NewGetAllServ(shopRepo)
-	createShopHandler := handlers.NewCreateHandler(createShopServ)
-	getAllShopsHandler := handlers.NewGetAllHandler(*getAllShopsServ)
-
 	// Gin configuration
 	gin.SetMode(gin.ReleaseMode)
 
@@ -72,8 +65,8 @@ func main() {
 	r.Use(logger.LogMiddleware)
 	r.Use(gin.Recovery())
 
-	r.POST("/shops", createShopHandler.Handle)
-	r.GET("/shops", getAllShopsHandler.Handle)
+	shop_routes.Set(r, db)
+	product_routes.Set(r, db)
 
 	address := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
 
