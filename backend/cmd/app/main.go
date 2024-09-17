@@ -51,7 +51,9 @@ func main() {
 		c.Name,
 	)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.NewGormLogger(),
+	})
 	if err != nil {
 		slog.Error("can not init db", "error", err)
 		return
