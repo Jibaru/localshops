@@ -14,12 +14,14 @@ var (
 )
 
 type createServ struct {
-	repository domain.ProductRepo
+	repository  domain.ProductRepo
+	productServ domain.ProductServ
 }
 
 type CreateRequest struct {
 	Name          string `json:"name"`
 	Description   string `json:"description"`
+	ShopID        string `json:"shop_id"`
 	PriceCurrency string `json:"price_currency"`
 	PriceAmount   int    `json:"price_amount"`
 }
@@ -28,18 +30,24 @@ type CreateResponse struct {
 	ID string `json:"id"`
 }
 
-func NewCreateServ(repo domain.ProductRepo) *createServ {
+func NewCreateServ(
+	repo domain.ProductRepo,
+	productServ domain.ProductServ,
+) *createServ {
 	return &createServ{
-		repository: repo,
+		repository:  repo,
+		productServ: productServ,
 	}
 }
 
 func (s *createServ) Execute(ctx context.Context, req CreateRequest) (*CreateResponse, error) {
 	slog.InfoContext(ctx, "exec create product", "req", req)
-	product, err := domain.NewProduct(
+	product, err := s.productServ.New(
+		ctx,
 		s.repository.NextID(),
 		req.Name,
 		req.Description,
+		req.ShopID,
 		req.PriceAmount,
 		req.PriceCurrency,
 	)

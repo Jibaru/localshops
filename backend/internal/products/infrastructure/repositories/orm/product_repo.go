@@ -20,6 +20,7 @@ type ProductRow struct {
 	Description   string `gorm:"description"`
 	PriceAmount   int    `gorm:"price_amount"`
 	PriceCurrency string `gorm:"price_currency"`
+	ShopID        string `gorm:"shop_id"`
 }
 
 func NewProductRepo(db *gorm.DB) *ProductRepo {
@@ -33,6 +34,7 @@ func mapProductToProductRow(product *domain.Product) *ProductRow {
 		Description:   product.Description(),
 		PriceAmount:   product.PriceAmount(),
 		PriceCurrency: product.PriceCurrency(),
+		ShopID:        product.ShopID(),
 	}
 }
 

@@ -45,7 +45,7 @@ func mapShopToShopRow(shop *domain.Shop) *ShopRow {
 	}
 }
 
-func mapShopRowsToShop(row *ShopRow) *domain.Shop {
+func mapShopRowToShop(row *ShopRow) *domain.Shop {
 	latitude, _ := strconv.ParseFloat(row.Latitude, 64)
 	longitude, _ := strconv.ParseFloat(row.Longitude, 64)
 
@@ -84,8 +84,22 @@ func (r *ShopRepo) Get(ctx context.Context) ([]*domain.Shop, error) {
 
 	shops := make([]*domain.Shop, len(rows))
 	for i, row := range rows {
-		shops[i] = mapShopRowsToShop(row)
+		shops[i] = mapShopRowToShop(row)
 	}
 
 	return shops, nil
+}
+
+func (r *ShopRepo) GetByID(ctx context.Context, id string) (*domain.Shop, error) {
+	var row ShopRow
+	res := r.db.WithContext(ctx).First(&row, "id = ?", id)
+	if res.Error != nil {
+		if errors.Is(res.Error, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, fmt.Errorf("%w: %v", domain.ErrShopRepoCanNotGetByID, res.Error)
+	}
+
+	return mapShopRowToShop(&row), nil
 }

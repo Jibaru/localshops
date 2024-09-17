@@ -9,3 +9,7 @@ type CreateServ interface {
 type GetAllServ interface {
 	Execute(ctx context.Context) (*GetAllResponse, error)
 }
+
+type GetServ interface {
+	Execute(ctx context.Context, id string) (*GetResponse, error)
+}

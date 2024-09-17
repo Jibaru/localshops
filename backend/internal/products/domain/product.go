@@ -9,6 +9,7 @@ var (
 	ErrEmptyID          = errors.New("empty id")
 	ErrEmptyName        = errors.New("empty name")
 	ErrEmptyDescription = errors.New("empty description")
+	ErrEmptyShopID      = errors.New("empty shop id")
 )
 
 type Product struct {
@@ -16,12 +17,14 @@ type Product struct {
 	name        string
 	description string
 	price       *Price
+	shopID      string
 }
 
-func NewProduct(
+func newProduct(
 	id string,
 	name string,
 	description string,
+	shopID string,
 	priceAmount int,
 	priceCurrency string,
 ) (*Product, error) {
@@ -37,24 +40,30 @@ func NewProduct(
 		return nil, ErrEmptyDescription
 	}
 
+	if strings.TrimSpace(shopID) == "" {
+		return nil, ErrEmptyShopID
+	}
+
 	price, err := NewPrice(priceCurrency, priceAmount)
 	if err != nil {
 		return nil, err
 	}
 
-	return HydrateProduct(id, name, description, price), nil
+	return HydrateProduct(id, name, description, shopID, price), nil
 }
 
 func HydrateProduct(
 	id string,
 	name string,
 	description string,
+	shopID string,
 	price *Price,
 ) *Product {
 	return &Product{
 		id:          id,
 		name:        name,
 		description: description,
+		shopID:      shopID,
 		price:       price,
 	}
 }
@@ -69,6 +78,10 @@ func (p *Product) Name() string {
 
 func (p *Product) Description() string {
 	return p.description
+}
+
+func (p *Product) ShopID() string {
+	return p.shopID
 }
 
 func (p *Product) PriceAmount() int {
