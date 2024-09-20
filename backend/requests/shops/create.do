@@ -1,12 +1,14 @@
 let {
     base = "http://localhost:8080";
+    correlationId = uuid();
 }
 
 do {
     url = "$base/shops";
     method = "POST";
     headers = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "X-Correlation-Id": correlationId
     };
     body = `{
         "name": "example",

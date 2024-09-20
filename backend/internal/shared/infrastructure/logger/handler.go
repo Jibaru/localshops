@@ -3,12 +3,8 @@ package logger
 import (
 	"context"
 	"log/slog"
-)
 
-type ContextKey string
-
-const (
-	RequestKey ContextKey = "X-Request-ID"
+	app_context "github.com/jibaru/localshops/internal/shared/infrastructure/context"
 )
 
 type LogHandler struct {
@@ -32,9 +28,9 @@ func (h *LogHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 func (h *LogHandler) Handle(ctx context.Context, record slog.Record) error {
-	requestID, ok := ctx.Value(RequestKey).(string)
+	correlationId, ok := ctx.Value(string(app_context.CorrelationIdKey)).(string)
 	if ok {
-		record.AddAttrs(slog.String(string(RequestKey), requestID))
+		record.AddAttrs(slog.String(string(app_context.CorrelationIdKey), correlationId))
 	}
 
 	return h.handler.Handle(ctx, record)

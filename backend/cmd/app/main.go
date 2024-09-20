@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 
 	product_routes "github.com/jibaru/localshops/internal/products/infrastructure/routes"
+	"github.com/jibaru/localshops/internal/shared/infrastructure/context"
 	"github.com/jibaru/localshops/internal/shared/infrastructure/logger"
 	shop_routes "github.com/jibaru/localshops/internal/shops/infrastructure/routes"
 )
@@ -64,6 +65,7 @@ func main() {
 
 	// Routes configuration
 	r := gin.New()
+	r.Use(context.SetCorrelationIDMiddleware)
 	r.Use(logger.LogMiddleware)
 	r.Use(gin.Recovery())
 
